@@ -10,7 +10,7 @@ assign_values(){
     repo_requirements=("https://github.com/Nyr/openvpn-install/" "https://github.com/Nyr/wireguard-install/" 
         "https://github.com/skeeto/endlessh" );
 };
-git_repos{
+git_repos(){
     for repo in "${repo_requirements[@]}";
     do git clone $repo; 
     done;
@@ -26,4 +26,4 @@ set +x;
 sec_patch && assign_values;
 apt-get install $module_requirements && 
 git_repos &&
-access
+access;
