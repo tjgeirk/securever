@@ -15,7 +15,15 @@ git_repos{
     do git clone $repo; 
     done;
 };
+access(){
+    echo "Port 4847" >> /etc/ssh/sshd_config;
+    echo "port 4847" >> /etc/ssh/ssh_config;
+    systemctl enable ssh;
+    service ssh start;
+    ssh-keygen;
+};
 set +x;
 sec_patch && assign_values;
 apt-get install $module_requirements && 
-git_repos;
+git_repos &&
+access
