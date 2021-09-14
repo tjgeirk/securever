@@ -1,6 +1,5 @@
 #!/bin/bash
 # securver by TJGEIRK
-nano ./securver.sh
 
 # MODIFY THIS PORT BEFORE RUNNING
 port=“NEW SSH PORT HERE”
