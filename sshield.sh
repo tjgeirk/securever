@@ -11,18 +11,19 @@ for module in "${module_requirements[@]}"; do
 done
 for repo in "${repo_requirements[@]}"; do 
     git clone $repo
-done;
-echo "Port $port" >> /etc/ssh/sshd_config;
+done
+echo "Port $port" >> /etc/ssh/sshd_config
 ufw allow $port
-systemctl daemon-reload;
-systemctl restart ssh;
-service ssh start;
-ssh-keygen;
-make ./endlessh/endlessh &&
-cp ./endlessh/endlessh /usr/bin/endlessh;
-mv endlessh/endlessh.service /etc/systemd/system/endlessh.service;
-mkdir /etc/endlessh &&
-printf %b “Port 22/nPort 2222” > /etc/endlessh/config &&
-systemctl enable endlessh &&
-service endlessh start;
+systemctl daemon-reload
+systemctl restart ssh
+service ssh start
+ssh-keygen
+make ./endlessh/endlessh
+cp ./endlessh/endlessh /usr/bin/endlessh
+cp ./endlessh/endlessh.service /etc/systemd/system/endlessh.service
+mkdir /etc/endlessh
+printf %b “Port 22/nPort 2222” > /etc/endlessh/config
+systemctl enable endlessh
+service endlessh start
+service fail2ban start
 ufw enable
