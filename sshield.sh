@@ -18,6 +18,9 @@ systemctl daemon-reload
 systemctl restart ssh
 service ssh start
 ssh-keygen
+curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | sudo bash
+sudo apt-get update
+sudo apt-get install crowdsec
 make ./endlessh/endlessh
 cp ./endlessh/endlessh /usr/bin/endlessh
 cp ./endlessh/endlessh.service /etc/systemd/system/endlessh.service
