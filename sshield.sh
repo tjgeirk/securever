@@ -1,32 +1,30 @@
 #!/bin/bash
-#
-# MODIFY THIS PORT BEFORE RUNNING
-port=“NEW SSH PORT HERE”
-module_requirements=("unattended-updates" "ufw" "ssh" "openssh-server" "sslh" "fail2ban" "python" "python3" "python3-pip" "docker.io");
-repo_requirements=("https://github.com/Nyr/openvpn-install/" "https://github.com/Nyr/wireguard-install/" "https://github.com/skeeto/endlessh");
+port=41917
 apt-get update
 apt-get -y full-upgrade
-for module in "${module_requirements[@]}"; do
-    apt-get -y install $module
-done
-for repo in "${repo_requirements[@]}"; do 
-    git clone $repo
-done
-echo "Port $port" >> /etc/ssh/sshd_config
-ufw allow $port
-systemctl daemon-reload
-systemctl restart ssh
-service ssh start
+apt-get -y install unattended-updates ufw sslh fail2ban curl git cmake make
 ssh-keygen
-curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | sudo bash
-sudo apt-get update
-sudo apt-get install crowdsec
-make ./endlessh/endlessh
-cp ./endlessh/endlessh /usr/bin/endlessh
-cp ./endlessh/endlessh.service /etc/systemd/system/endlessh.service
-mkdir /etc/endlessh
-printf %b “Port 22/nPort 2222” > /etc/endlessh/config
-systemctl enable endlessh
-service endlessh start
-service fail2ban start
+ufw allow $port
+ufw allow 443
+ufw allow 80
+if [ -d /etc/crowdsec ]; then
+    echo "crowdsec already installed"
+else
+    curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | sudo bash
+    apt-get install crowdsec
+fi
+if [ -d /etc/endlessh ]; then
+    echo "endlessh already installed"
+else
+    git clone https://github.com/skeeto/endlessh /etc/endlessh
+    echo "Port 22" > /etc/endlessh/config
+    make /etc/endlessh/endlessh
+    cp /etc/endlessh/endlessh /usr/bin/endlessh
+    cp /etc/endlessh/endlessh /bin/endlessh
+    cp /etc/endlessh/endlessh /sbin/endlessh
+    cp /etc/endlessh/endlessh.service /etc/systemd/system/endlessh.service
+fi
+systemctl enable endless
+systemctl enable fail2ban
+systemctl enable crowdsec
 ufw enable
